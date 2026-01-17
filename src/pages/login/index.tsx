@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { instance } from '@/instance/instance';
 
 export default function Login() {
   const router = useRouter();
@@ -24,28 +25,20 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Aqui você fará a chamada para sua API
-      const response = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      
+      const response = await instance.post('/auth/login', formData);
+    
+      const data = await response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (!response) {
         throw new Error(data.message || 'Erro ao fazer login');
       }
 
-      // Armazena o token no localStorage
       if (data.token) {
         localStorage.setItem('token', data.token);
       }
 
-      // Redireciona para a página principal após sucesso
-      router.push('/');
+      router.push('/home');
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login. Tente novamente.');
     } finally {
@@ -56,7 +49,6 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8">
-        {/* Header */}
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
             <svg
@@ -81,7 +73,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
@@ -107,7 +98,6 @@ export default function Login() {
           )}
 
           <div className="space-y-4">
-            {/* Email */}
             <div>
               <label
                 htmlFor="email"
@@ -141,13 +131,12 @@ export default function Login() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out"
+                  className="appearance-none text-gray-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out"
                   placeholder="seu@email.com"
                 />
               </div>
             </div>
 
-            {/* Senha */}
             <div>
               <label
                 htmlFor="password"
@@ -181,14 +170,13 @@ export default function Login() {
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out"
+                  className="appearance-none text-gray-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out"
                   placeholder="Digite sua senha"
                 />
               </div>
             </div>
           </div>
 
-          {/* Esqueci senha */}
           {/* <div className="flex items-center justify-end">
             <div className="text-sm">
               <a
@@ -200,7 +188,6 @@ export default function Login() {
             </div>
           </div> */}
 
-          {/* Submit Button */}
           <div>
             <button
               type="submit"
@@ -264,7 +251,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Register Link */}
           <div>
             <Link
               href="/register"
